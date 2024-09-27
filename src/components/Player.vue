@@ -11,6 +11,7 @@ library.add(faHeart, faShield, faCrosshairs, faSkull);
 
 interface Props {
   players: Array<Player>;
+  isLeft: boolean;
   teamClass: string;
 }
 
@@ -20,7 +21,7 @@ defineProps<Props>();
 <template>
   <div :class="['team-container', teamClass]">
     <div v-for="player in players" :key="player.id"
-      :class="['player-container', player.team === 'red' ? 'player-container-red' : 'player-container-blue']">
+      :class="['player-container', isLeft ? 'player-container-red' : 'player-container-blue']">
       <div class="player-header">
         <div class="player-name">{{ player.name }}</div>
         <div class="player-health">

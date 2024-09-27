@@ -5,16 +5,18 @@ import { computed } from 'vue';
 
 const props = defineProps<{
   players: Array<PlayerModel>;
+  leftTeamModel: string;
+  rightTeamModel: string;
 }>();
 
-const redPlayers = computed(() => props.players.filter(player => player.team === 'red'));
-const bluePlayers = computed(() => props.players.filter(player => player.team === 'blue'));
+const leftTeamPlayers = computed(() => props.players.filter(player => player.team === props.leftTeamModel));
+const redTeamPlayers = computed(() => props.players.filter(player => player.team === props.rightTeamModel));
 </script>
 
 <template>
   <div id="playersContainer">
-    <Player :players="redPlayers" teamClass="team-red" />
-    <Player :players="bluePlayers" teamClass="team-blue" />
+    <Player :players="leftTeamPlayers" :isLeft=true teamClass="team-red" />
+    <Player :players="redTeamPlayers" :isLeft=false teamClass="team-blue" />
   </div>
 </template>
 

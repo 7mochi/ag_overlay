@@ -1,29 +1,33 @@
-<script setup="ts">
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import PlayersContainer from './components/PlayersContainer.vue';
 import Error from './components/Error.vue';
-import { ref, onMounted } from 'vue';
+import Settings from './components/Settings.vue';
 import Scoreboard from './components/Scoreboard.vue';
+import { Player } from './models/Player';
 
-const redScore = ref(0);
-const blueScore = ref(0);
+const leftTeamScore = ref(0);
+const rightTeamScore = ref(0);
 const timer = ref(0);
 const players = ref([]);
 const showError = ref(false);
+const leftTeamModel = ref('red');
+const rightTeamModel = ref('blue');
 
-function handleWebSocketData(data) {
+function handleWebSocketData(data: string) {
   try {
     const parsedData = JSON.parse(data);
     if (parsedData && Array.isArray(parsedData.players)) {
-      redScore.value = 0;
-      blueScore.value = 0;
+      leftTeamScore.value = 0;
+      rightTeamScore.value = 0;
       players.value = parsedData.players;
       timer.value = parsedData.timelimit - parsedData.effectiveTime;
 
-      parsedData.players.forEach(player => {
-        if (player.team === 'red') {
-          redScore.value += player.frags;
-        } else if (player.team === 'blue') {
-          blueScore.value += player.frags;
+      parsedData.players.forEach((player: Player) => {
+        if (player.team === leftTeamModel.value) {
+          leftTeamScore.value += player.frags;
+        } else if (player.team === rightTeamModel.value) {
+          rightTeamScore.value += player.frags;
         }
       });
     } else {
@@ -31,6 +35,14 @@ function handleWebSocketData(data) {
     }
   } catch (error) {
     showError.value = true;
+  }
+}
+
+function updateTeamModel(team: string, model: string): void {
+  if (team === 'left') {
+    leftTeamModel.value = model;
+  } else if (team === 'right') {
+    rightTeamModel.value = model;
   }
 }
 
@@ -45,9 +57,14 @@ onMounted(() => {
 
 <template>
   <div id="main">
-    <Scoreboard :redScore="redScore" :blueScore="blueScore" :timer='timer'/>
-    <PlayersContainer :players="players" />
+    <Scoreboard :redScore="leftTeamScore" :blueScore="rightTeamScore" :timer='timer'/>
+    <PlayersContainer :players="players" :leftTeamModel="leftTeamModel" :rightTeamModel="rightTeamModel"/>
     <Error v-if="showError" />
+    <Settings
+      :leftTeamModel="leftTeamModel"
+      :rightTeamModel="rightTeamModel"
+      :updateTeamModel="updateTeamModel"
+    />
   </div>
 </template>
 
@@ -56,9 +73,38 @@ onMounted(() => {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow: visible;
   width: 1920px;
   height: 1080px;
-  background-color: rgba(0,0,0,0.0);
+  background-color: rgba(0, 0, 0, 0.0);
+  position: relative;
+}
+
+#team-model-settings {
+  position: absolute;
+  top: 1080px;
+  width: 100%;
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.team-model {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+input {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 </style>
