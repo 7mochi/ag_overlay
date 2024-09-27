@@ -1,0 +1,12 @@
+{
+  "compiler": {
+    "dir": "./.compiler",
+    "version": "1.9.0-git5294",
+    "dev": true,
+    "addons": [],
+    "executable": "amxxpc"
+  },
+  "output": {
+    "plugins": "/media/hdd/LinuxApps/Gameservers/UNI/serverfiles/ag/addons/amxmodx/plugins/"
+  }
+}
